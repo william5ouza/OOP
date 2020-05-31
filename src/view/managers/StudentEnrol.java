@@ -28,7 +28,7 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
         conn = Connection_Module.connector();
     }
 
-    private void StdSearch() {
+    private void StdIDSearch() {
         String sql = "select * from users where StudentID=?";
         ;
 
@@ -42,13 +42,50 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
             rs = pst.executeQuery();
 
             if (rs.next()) {
+                    
+                txtStdNm.setText(rs.getString(3));
+                //txtEmail.setText(rs.getString(3)); //here is where the second item of the table is 
+                //txtPhn.setText(rs.getString(4)); //here is where the third item of the table is 
+                //cboCourse.setSelectedItem(rs.getString(5)); //here is where the sixth item of the table is (combo box)
+                cboBranch.setSelectedItem(rs.getString(6));
 
+            }
+            else{
+                
+                JOptionPane.showMessageDialog(null, "Student Not Found");
+            }
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(null, e);
+
+        }
+
+    }
+    
+    private void StdSearch() {
+        String sql = "select * from student where StudentID=?";
+        ;
+
+        try {
+
+            pst = conn.prepareStatement(sql);
+
+            pst.setString(1, txtStdID.getText());
+            //pst.setString(2, txtStdID.getText());
+
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                    
                 txtStdNm.setText(rs.getString(2));
                 txtEmail.setText(rs.getString(3)); //here is where the second item of the table is 
                 txtPhn.setText(rs.getString(4)); //here is where the third item of the table is 
                 cboCourse.setSelectedItem(rs.getString(5)); //here is where the sixth item of the table is (combo box)
-                //.setSelectedItem(rs.getString(6));
+                cboBranch.setSelectedItem(rs.getString(6));
 
+            }else {
+                
+                JOptionPane.showMessageDialog(null, "Student Not Found");
             }
         } catch (Exception e) {
 
@@ -62,15 +99,16 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
 
         //Here the student data is updated into "student" table as the ID has been already set by the SuperUser "ADMIN"
         //Here by searching the student data by user is possible to add additional info such as email, phone, course and module.
-        String sql = "Insert into student (Std_Email, Std_Phone, CourseID, Branch) values (?, ?, ?, ?, ?)";
+        String sql = "Insert into student (Stud_Name, Stud_Email, Stud_Phone, CourseID, Branch) values (?, ?, ?, ?,?)";
 
         try {
 
             pst = conn.prepareStatement(sql);
-            pst.setString(1, txtEmail.getText());
-            pst.setString(2, txtPhn.getText());
-            pst.setString(3, cboCourse.getSelectedItem().toString());
-            //pst.setString(4, cboBranch.getSelectedItem().toString());
+            pst.setString(1, txtStdNm.getText());
+            pst.setString(2, txtEmail.getText());
+            pst.setString(3, txtPhn.getText());
+            pst.setString(4, cboCourse.getSelectedItem().toString());
+            pst.setString(5, cboBranch.getSelectedItem().toString());
 
             if (txtStdID.getText().isEmpty() || txtStdNm.getText().isEmpty() || txtEmail.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Please fill all mandatory fields");
@@ -81,7 +119,9 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
                     txtStdID.setText(null);
                     txtStdNm.setText(null);
                     txtEmail.setText(null);
+                    txtPhn.setText(null);
                     cboCourse.setSelectedItem(null);
+                    cboBranch.setSelectedItem(null);
                     
 
                 }
@@ -106,7 +146,7 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         btnUpdateStd = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        stdSearch = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         txtStdID = new javax.swing.JTextField();
@@ -119,7 +159,8 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
         jLabel5 = new javax.swing.JLabel();
         txtEmail = new javax.swing.JTextField();
         cboCourse = new javax.swing.JComboBox<>();
-        cbobranch = new javax.swing.JComboBox<>();
+        cboBranch = new javax.swing.JComboBox<>();
+        stdIDCheck = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -135,11 +176,11 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/StudSearch.png"))); // NOI18N
-        jButton3.setToolTipText("Search Student");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        stdSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/StudSearch.png"))); // NOI18N
+        stdSearch.setToolTipText("Search Student");
+        stdSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                stdSearchActionPerformed(evt);
             }
         });
 
@@ -207,11 +248,18 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
             }
         });
 
-        cbobranch.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        cbobranch.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dublin", "Cork", "Galway" }));
-        cbobranch.addActionListener(new java.awt.event.ActionListener() {
+        cboBranch.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        cboBranch.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dublin", "Cork", "Galway" }));
+        cboBranch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbobranchActionPerformed(evt);
+                cboBranchActionPerformed(evt);
+            }
+        });
+
+        stdIDCheck.setText("Search");
+        stdIDCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stdIDCheckActionPerformed(evt);
             }
         });
 
@@ -230,19 +278,20 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
                             .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(44, 44, 44)
-                                .addComponent(txtStdID, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtStdNm, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtEmail, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtPhn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(txtPhn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(44, 44, 44)
+                                .addComponent(txtStdID, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(stdIDCheck))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cbobranch, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cboBranch, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
@@ -259,7 +308,9 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtStdID, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtStdID, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(stdIDCheck))
                         .addGap(18, 18, 18)
                         .addComponent(txtStdNm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -277,7 +328,7 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbobranch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cboBranch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -293,7 +344,7 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
                 .addGap(49, 49, 49))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(120, 120, 120)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(stdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(92, 92, 92)
                 .addComponent(btnUpdateStd, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -306,7 +357,7 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnUpdateStd, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(stdSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 
@@ -329,10 +380,10 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtEmailActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void stdSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stdSearchActionPerformed
         // TODO add your handling code here:
         StdSearch();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_stdSearchActionPerformed
 
     private void btnUpdateStdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateStdActionPerformed
         // TODO add your handling code here:
@@ -344,16 +395,19 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_cboCourseActionPerformed
 
-    private void cbobranchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbobranchActionPerformed
+    private void cboBranchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboBranchActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbobranchActionPerformed
+    }//GEN-LAST:event_cboBranchActionPerformed
+
+    private void stdIDCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stdIDCheckActionPerformed
+        StdIDSearch();
+    }//GEN-LAST:event_stdIDCheckActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnUpdateStd;
+    private javax.swing.JComboBox<String> cboBranch;
     private javax.swing.JComboBox<String> cboCourse;
-    private javax.swing.JComboBox<String> cbobranch;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -361,6 +415,8 @@ public class StudentEnrol extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton stdIDCheck;
+    private javax.swing.JButton stdSearch;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtPhn;
     private javax.swing.JTextField txtStdID;
